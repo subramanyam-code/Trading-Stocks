@@ -10,20 +10,20 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Build Project') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
         stage('Deploy to S3') {
             steps {
-                sh '''
-                aws s3 sync build/ s3://$S3_BUCKET --delete
+                bat '''
+                aws s3 sync build s3://%S3_BUCKET% --delete
                 '''
             }
         }
