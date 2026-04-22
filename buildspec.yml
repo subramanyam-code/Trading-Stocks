@@ -1,0 +1,19 @@
+version: 0.2
+
+env:
+  variables:
+    S3_BUCKET_NAME: stocks-crop
+    BUILD_DIR: build
+
+phases:
+  install:
+    commands:
+      - npm install
+
+  build:
+    commands:
+      - npm run build
+
+  post_build:
+    commands:
+      - aws s3 sync $BUILD_DIR s3://$S3_BUCKET_NAME --delete
