@@ -187,21 +187,18 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       });
       if (error || !data) {
         console.warn('Batch refresh failed', error);
-        // Simulate price changes when API fails
+        // Simulate price changes when API fails - for ALL stocks
         setStocks(prev => prev.map(s => {
-          if (targets.includes(s.symbol)) {
-            const change = (Math.random() - 0.5) * 0.02 * s.price; // ±1% change
-            const newPrice = Math.max(0.01, s.price + change);
-            const newChange = newPrice - s.price;
-            const newChangePercent = (newChange / s.price) * 100;
-            return {
-              ...s,
-              price: parseFloat(newPrice.toFixed(2)),
-              change: parseFloat(newChange.toFixed(2)),
-              changePercent: parseFloat(newChangePercent.toFixed(2)),
-            };
-          }
-          return s;
+          const change = (Math.random() - 0.5) * 0.004 * s.price; // ±0.2% change for 2s interval
+          const newPrice = Math.max(0.01, s.price + change);
+          const newChange = newPrice - s.price;
+          const newChangePercent = (newChange / s.price) * 100;
+          return {
+            ...s,
+            price: parseFloat(newPrice.toFixed(2)),
+            change: parseFloat(newChange.toFixed(2)),
+            changePercent: parseFloat(newChangePercent.toFixed(2)),
+          };
         }));
         setIsLiveData(false);
         setLastSyncedAt(Date.now());
@@ -212,7 +209,19 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (data.quotes) {
         setStocks(prev => prev.map(s => {
           const q = data.quotes[s.symbol];
-          if (!q) return s;
+          if (!q) {
+            // Add price variation for stocks without API data
+            const change = (Math.random() - 0.5) * 0.004 * s.price;
+            const newPrice = Math.max(0.01, s.price + change);
+            const newChange = newPrice - s.price;
+            const newChangePercent = (newChange / s.price) * 100;
+            return {
+              ...s,
+              price: parseFloat(newPrice.toFixed(2)),
+              change: parseFloat(newChange.toFixed(2)),
+              changePercent: parseFloat(newChangePercent.toFixed(2)),
+            };
+          }
           return {
             ...s,
             price: q.price || s.price,
@@ -226,6 +235,20 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }));
       } else if (data.symbol) {
         applyQuote(data.symbol, data);
+      } else {
+        // Fallback: vary all stock prices
+        setStocks(prev => prev.map(s => {
+          const change = (Math.random() - 0.5) * 0.004 * s.price;
+          const newPrice = Math.max(0.01, s.price + change);
+          const newChange = newPrice - s.price;
+          const newChangePercent = (newChange / s.price) * 100;
+          return {
+            ...s,
+            price: parseFloat(newPrice.toFixed(2)),
+            change: parseFloat(newChange.toFixed(2)),
+            changePercent: parseFloat(newChangePercent.toFixed(2)),
+          };
+        }));
       }
       setIsLiveData(true);
       setLastSyncedAt(Date.now());
@@ -233,7 +256,7 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.error('batchRefresh error:', e);
       // Simulate price changes on error
       setStocks(prev => prev.map(s => {
-        const change = (Math.random() - 0.5) * 0.02 * s.price; // ±1% change
+        const change = (Math.random() - 0.5) * 0.004 * s.price; // ±0.2% change for 2s interval
         const newPrice = Math.max(0.01, s.price + change);
         const newChange = newPrice - s.price;
         const newChangePercent = (newChange / s.price) * 100;
@@ -249,14 +272,14 @@ export const TradingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [holdings, watchlist, applyQuote]);
 
-  // Initial load + interval refresh (every 5s for real-time feel)
+  // Initial load + interval refresh (every 2s for real-time feel)
   const firstLoad = useRef(true);
   useEffect(() => {
     if (firstLoad.current) {
       firstLoad.current = false;
       batchRefresh();
     }
-    const interval = setInterval(batchRefresh, 5000);
+    const interval = setInterval(batchRefresh, 2000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

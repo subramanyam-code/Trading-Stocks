@@ -73,7 +73,7 @@ const FEATURES_DATA = [
 ];
 
 const AppLayout: React.FC = () => {
-  const { stocks, searchQuery, getPortfolioValue, walletBalance, holdings, isLiveData, lastSyncedAt } = useTrading();
+  const { stocks, searchQuery, getPortfolioValue, walletBalance, holdings, isLiveData, lastSyncedAt, profile } = useTrading();
   const [selectedSectors, setSelectedSectors] = useState<string[]>(['All']);
   const [sort, setSort] = useState('default');
   const [showSectorFilter, setShowSectorFilter] = useState(false);
@@ -243,7 +243,7 @@ const AppLayout: React.FC = () => {
                   <label key={sectorName} className="flex items-center gap-3 cursor-pointer hover:bg-slate-700 p-2 rounded transition-colors">
                     <Checkbox
                       checked={selectedSectors.includes(sectorName)}
-                      onChange={() => handleSectorChange(sectorName)}
+                      onCheckedChange={() => handleSectorChange(sectorName)}
                       className="w-4 h-4"
                     />
                     <span className="text-white text-sm flex-1">{sectorName}</span>

@@ -40,6 +40,7 @@ const Wallet: React.FC = () => {
   
   const [bankSearch, setBankSearch] = useState('');
   const [showBankList, setShowBankList] = useState(false);
+  const [bankSelectTimeout, setBankSelectTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const handleMethodChange = (newMethod: 'UPI' | 'CARD' | 'NETBANKING') => {
     setMethod(newMethod);
@@ -274,7 +275,10 @@ const Wallet: React.FC = () => {
                       value={bankSearch}
                       onChange={e => { setBankSearch(e.target.value); setShowBankList(true); }}
                       onFocus={() => setShowBankList(true)}
-                      onBlur={() => setTimeout(() => setShowBankList(false), 200)}
+                      onBlur={() => {
+                        if (bankSelectTimeout) clearTimeout(bankSelectTimeout);
+                        setBankSelectTimeout(setTimeout(() => setShowBankList(false), 300));
+                      }}
                       placeholder="Search for your bank..."
                       className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-emerald-500"
                     />
@@ -284,7 +288,13 @@ const Wallet: React.FC = () => {
                           <button
                             key={bank}
                             type="button"
-                            onClick={() => { setBankName(bank); setBankSearch(bank); setShowBankList(false); }}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              if (bankSelectTimeout) clearTimeout(bankSelectTimeout);
+                              setBankName(bank);
+                              setBankSearch(bank);
+                              setShowBankList(false);
+                            }}
                             className="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-700 hover:text-white text-sm"
                           >
                             {bank}

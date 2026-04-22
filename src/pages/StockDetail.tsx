@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { PriceHistory } from '@/data/stocks';
 import { ArrowLeft, Star, TrendingUp, TrendingDown, Loader2, Wifi } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
