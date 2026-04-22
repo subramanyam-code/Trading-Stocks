@@ -22,9 +22,14 @@ pipeline {
 
         stage('Deploy to S3') {
             steps {
-                bat '''
-                aws s3 sync dist s3://%S3_BUCKET% --delete
-                '''
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
+                    bat '''
+                    aws s3 sync dist s3://%S3_BUCKET% --delete
+                    '''
+                }
             }
         }
     }
