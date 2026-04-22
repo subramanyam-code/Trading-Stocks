@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'ap-south-2'   // change if needed
-        S3_BUCKET = 'stocks-crop'      // 🔴 replace with your bucket
+        AWS_DEFAULT_REGION = 'ap-south-2'
+        S3_BUCKET = 'stocks-crop'
     }
 
     stages {
@@ -33,6 +33,7 @@ pipeline {
                 '''
             }
         }
+    }   // ✅ THIS WAS MISSING
 
     post {
         success {
