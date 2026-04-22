@@ -8,12 +8,6 @@ pipeline {
 
     stages {
 
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/subramanyam-code/Trading-Stocks.git'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
@@ -33,7 +27,7 @@ pipeline {
                 '''
             }
         }
-    }   // ✅ THIS WAS MISSING
+    }
 
     post {
         success {
